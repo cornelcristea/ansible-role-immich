@@ -14,7 +14,7 @@ services:
       POSTGRES_PASSWORD: {{ immich_db_password }}
       POSTGRES_DB: {{ immich_db_name }}
     volumes:
-      - "{{ immich_host_dir }}/postgres:/var/lib/postgresql/data"
+      - "{{ immich_host_volume }}/postgres:/var/lib/postgresql/data"
 
   redis-server:
     container_name: redis
@@ -28,7 +28,7 @@ services:
     healthcheck:
       test: redis-cli ping || exit 1
     volumes:
-      - "{{ immich_host_dir }}/redis:/data"
+      - "{{ immich_host_volume }}/redis:/data"
 
   immich-server:
     container_name: immich
@@ -46,13 +46,13 @@ services:
       UPLOAD_LOCATION: /data
       TZ: {{ immich_timezone }}
     volumes:
-      - "{{ immich_host_dir }}:/data"
-      - "{{ immich_storage_dir }}/library:/data/library"
-      - "{{ immich_storage_dir }}/encoded-video:/data/encoded-video"
-      - "{{ immich_storage_dir }}/thumbs:/data/thumbs"
-      - "{{ immich_storage_dir }}/profile:/data/profile"
-      - "{{ immich_storage_dir }}/upload:/data/upload"
-      - "{{ immich_storage_dir }}/backups:/data/backups"
+      - "{{ immich_host_volume }}:/data"
+      - "{{ immich_data_volume }}/library:/data/library"
+      - "{{ immich_data_volume }}/encoded-video:/data/encoded-video"
+      - "{{ immich_data_volume }}/thumbs:/data/thumbs"
+      - "{{ immich_data_volume }}/profile:/data/profile"
+      - "{{ immich_data_volume }}/upload:/data/upload"
+      - "{{ immich_data_volume }}/backups:/data/backups"
     ports:
       - "{{ immich_port}}:2283"
     depends_on:
