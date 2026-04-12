@@ -39,7 +39,7 @@ The role uses the following variables:
   vars:
     immich_db_name: PostgreSQL
   roles:
-    - cornelcristea.tailsclae
+    - cornelcristea.immich
 ```
 
 ## How to contribute
