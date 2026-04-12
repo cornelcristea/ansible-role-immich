@@ -1,16 +1,29 @@
 ---
 # defaults file for immich
 
-immich_storage_dir: "{{ immich_host_dir }}/data"
+# path for persisting data
+immich_data_volume: "{{ immich_host_volume }}/data"
 
+# version of docker image
 immich_version: release
-immich_postgres_version: 15-vectorchord0.5.3-pgvector0.8.1
-immich_valkey_version: 9@sha256:3b55fbaa0cd93cf0d9d961f405e4dfcc70efe325e2d84da207a0a8e6d8fde4f9
 
+# postgreSQL version with pgvector extension
+immich_postgres_version: 15-vectorchord0.5.3-pgvector0.8.1
+
+# valkey (redis-compatible) version
+immich_valkey_version: "9"
+
+# web interface port
 immich_port: 2283
 
+# timezone for application
 immich_timezone: UTC
 
+# database name
 immich_db_name: immich_db
+
+# database username
 immich_db_username: dbuser
+
+# database password
 immich_db_password: dbpass
