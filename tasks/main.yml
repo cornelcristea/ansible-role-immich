@@ -1,70 +1,73 @@
 ---
 # tasks file for immich
 
-- name: Create directories
-  ansible.builtin.file:
-    path: "{{ item }}"
-    state: directory
-    owner: "{{ immich_uid }}"
-    group: "{{ immich_gid }}"
-    mode: "0755"
-  loop:
-    - "{{ immich_host_volume }}"
-    - "{{ immich_host_volume }}/postgres"
-    - "{{ immich_host_volume }}/redis"
-    - "{{ immich_data_volume }}"
-    - "{{ immich_data_volume }}/encoded-video"
-    - "{{ immich_data_volume }}/library"
-    - "{{ immich_data_volume }}/thumbs"
-    - "{{ immich_data_volume }}/profile"
-    - "{{ immich_data_volume }}/upload"
-    - "{{ immich_data_volume }}/backups"
-  loop_control:
-    loop_var: item
-  tags: update_immich
+- name: block - Setup tasks
+  block:
+    - name: Create directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+        owner: "{{ immich_uid }}"
+        group: "{{ immich_gid }}"
+        mode: "0755"
+      loop:
+        - "{{ immich_host_volume }}"
+        - "{{ immich_host_volume }}/postgres"
+        - "{{ immich_host_volume }}/redis"
+        - "{{ immich_data_volume }}"
+        - "{{ immich_data_volume }}/encoded-video"
+        - "{{ immich_data_volume }}/library"
+        - "{{ immich_data_volume }}/thumbs"
+        - "{{ immich_data_volume }}/profile"
+        - "{{ immich_data_volume }}/upload"
+        - "{{ immich_data_volume }}/backups"
+      loop_control:
+        loop_var: item
 
-- name: Set permission for redis directory
-  file:
-    path: "{{ immich_host_volume }}/redis"
-    state: directory
-    owner: "999"
-    group: "999"
-    mode: "0755"
-  tags: update_immich
+    - name: Set permission for redis directory
+      file:
+        path: "{{ immich_host_volume }}/redis"
+        state: directory
+        owner: "999"
+        group: "999"
+        mode: "0755"
 
-- name: Create .immich file in data folders
-  ansible.builtin.file:
-    path: "{{ item }}/.immich"
-    state: touch
-    owner: "{{ immich_uid }}"
-    group: "{{ immich_gid }}"
-    mode: "0644"
-  loop:
-    - "{{ immich_data_volume }}/library"
-    - "{{ immich_data_volume }}/encoded-video"
-    - "{{ immich_data_volume }}/thumbs"
-    - "{{ immich_data_volume }}/profile"
-    - "{{ immich_data_volume }}/upload"
-    - "{{ immich_data_volume }}/backups"
-  loop_control:
-    loop_var: item
-  tags: update_immich
-
-- name: Generate docker compose file
-  template:
-    src: docker-compose.yml.j2
-    dest: "{{ immich_host_volume }}/docker-compose.yml"
-    owner: "{{ immich_uid }}"
-    group: "{{ immich_gid }}"
-    mode: "0644"
+    - name: Create .immich file in data folders
+      ansible.builtin.file:
+        path: "{{ item }}/.immich"
+        state: touch
+        owner: "{{ immich_uid }}"
+        group: "{{ immich_gid }}"
+        mode: "0644"
+      loop:
+        - "{{ immich_data_volume }}/library"
+        - "{{ immich_data_volume }}/encoded-video"
+        - "{{ immich_data_volume }}/thumbs"
+        - "{{ immich_data_volume }}/profile"
+        - "{{ immich_data_volume }}/upload"
+        - "{{ immich_data_volume }}/backups"
+      loop_control:
+        loop_var: item
   tags:
     - update_immich
-    - update_docker_compose
 
-- name: Run docker compose
-  community.docker.docker_compose_v2:
-    project_src: "{{ immich_host_volume }}"
-    state: present
+- name: block - Docker tasks
+  block:
+    - name: Generate docker compose file
+      template:
+        src: docker-compose.yml.j2
+        dest: "{{ immich_host_volume }}/docker-compose.yml"
+        owner: "{{ immich_uid }}"
+        group: "{{ immich_gid }}"
+        mode: "0644"
+      tags:
+        - update_immich
+        - update_docker_compose
+
+    - name: Run docker compose
+      community.docker.docker_compose_v2:
+        project_src: "{{ immich_host_volume }}"
+        state: present
   tags:
     - update_immich
     - update_docker_compose
