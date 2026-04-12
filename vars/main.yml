@@ -1,8 +1,7 @@
 ---
 # vars file for immich
 
-immich_host_dir: /opt/immich
+immich_host_volume: /opt/immich
 
-immich_user_uid: 1000
-immich_user_gid: 1000
-
+immich_uid: 1000
+immich_gid: 1000
