@@ -57,7 +57,7 @@
     owner: "{{ immich_uid }}"
     group: "{{ immich_gid }}"
     mode: "0644"
-  tags: 
+  tags:
     - update_immich
     - update_docker_compose
 
@@ -65,6 +65,6 @@
   community.docker.docker_compose_v2:
     project_src: "{{ immich_host_volume }}"
     state: present
-  tags: 
+  tags:
     - update_immich
     - update_docker_compose
