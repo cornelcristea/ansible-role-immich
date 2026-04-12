@@ -21,9 +21,9 @@ The role uses the following variables:
 | Name | Description | Default |
 |---------|-------------|---------|
 | `immich_data_volume` | Path for persisting data | `/opt/immich/data` |
-| `immich_version` | Version of docker image | `release` |
-| `immich_postgres_version` | PostgreSQL version with pgvector extension | `15-vectorchord0.5.3-pgvector0.8.1` |
-| `immich_valkey_version` | Valkey (redis-compatible) version | `9@sha256:3b55fbaa0cd93cf0d9d961f405e4dfcc70efe325e2d84da207a0a8e6d8fde4f9` |
+| `immich_version` | Version of docker image | *check defaults* |
+| `immich_postgres_version` | PostgreSQL version with pgvector extension | *check defaults* |
+| `immich_valkey_version` | Valkey (redis-compatible) version | *check defaults* |
 | `immich_port` | Web interface port | `2283` |
 | `immich_timezone` | Timezone for application | `UTC` |
 | `immich_db_name` | Database name | `immich_db` |
