@@ -1,23 +1,28 @@
 ---
 services:
-  database:
-    container_name: postgres
+  db:
+    container_name: immich-postgres
     image: ghcr.io/immich-app/postgres:{{ immich_postgres_version }}
-    restart: unless-stopped
     logging:
       driver: json-file
       options:
         max-size: "10m"
         max-file: "3"
     environment:
-      POSTGRES_USER: {{ immich_db_username }}
-      POSTGRES_PASSWORD: {{ immich_db_password }}
-      POSTGRES_DB: {{ immich_db_name }}
+      POSTGRES_USER: ${IMMICH_POSTGRES_USERNAME}
+      POSTGRES_PASSWORD: ${IMMICH_POSTGRES_PASSWORD}
+      POSTGRES_DB: ${IMMICH_POSTGRES_DB}
+      POSTGRES_INITDB_ARGS: '--data-checksums'
+      DB_STORAGE_TYPE: {{ immich_db_storage_type }}
     volumes:
-      - "{{ immich_host_volume }}/postgres:/var/lib/postgresql/data"
+      - "{{ immich_db_dir }}:/var/lib/postgresql/data"
+    shm_size: 128mb
+    restart: unless-stopped
+    healthcheck:
+      disable: false
 
-  redis-server:
-    container_name: redis
+  redis:
+    container_name: immich-redis
     image: docker.io/valkey/valkey:{{ immich_valkey_version }}
     restart: unless-stopped
     logging:
@@ -28,10 +33,10 @@ services:
     healthcheck:
       test: redis-cli ping || exit 1
     volumes:
-      - "{{ immich_host_volume }}/redis:/data"
+      - "{{ immich_redis_dir }}:/data"
 
-  immich-server:
-    container_name: immich
+  immich:
+    container_name: immich-server
     image: ghcr.io/immich-app/immich-server:{{ immich_version }}
     restart: unless-stopped
     logging:
@@ -40,24 +45,40 @@ services:
         max-size: "10m"
         max-file: "3"
     environment:
-      DB_USERNAME: {{ immich_db_username }}
-      DB_PASSWORD: {{ immich_db_password }}
-      DB_DATABASE_NAME: {{ immich_db_name }}
+      DB_USERNAME: ${IMMICH_POSTGRES_USERNAME}
+      DB_PASSWORD: ${IMMICH_POSTGRES_PASSWORD}
+      DB_DATABASE_NAME: ${IMMICH_POSTGRES_DB}
       UPLOAD_LOCATION: /data
       TZ: {{ immich_timezone }}
     volumes:
-      - "{{ immich_host_volume }}:/data"
-      - "{{ immich_data_volume }}/library:/data/library"
-      - "{{ immich_data_volume }}/encoded-video:/data/encoded-video"
-      - "{{ immich_data_volume }}/thumbs:/data/thumbs"
-      - "{{ immich_data_volume }}/profile:/data/profile"
-      - "{{ immich_data_volume }}/upload:/data/upload"
-      - "{{ immich_data_volume }}/backups:/data/backups"
+      - "{{ immich_host_dir }}:/data"
+      - "{{ immich_data_dir }}/library:/data/library"
+      - "{{ immich_data_dir }}/encoded-video:/data/encoded-video"
+      - "{{ immich_data_dir }}/thumbs:/data/thumbs"
+      - "{{ immich_data_dir }}/profile:/data/profile"
+      - "{{ immich_data_dir }}/upload:/data/upload"
+      - "{{ immich_data_dir }}/backups:/data/backups"
     ports:
       - "{{ immich_port}}:2283"
     depends_on:
-      - database
-      - redis-server
+      - db
+      - redis
+
+{% if immich_ml_enabled %}
+  ml:
+    container_name: immich-machine-learning
+    image: ghcr.io/immich-app/immich-machine-learning:{{ immich_ml_version }}
+{% if immich_ml_hw_accel_enabled %}
+    extends:
+      file: hwaccel.ml.yml
+      service: {{ immich_ml_hw_accel_service }}
+{% endif %}
+    volumes:
+      - model-cache:/cache
+    restart: always
+    healthcheck:
+      disable: false
+{% endif %}
 
 volumes:
   model-cache:
