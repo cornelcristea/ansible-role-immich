@@ -1,0 +1,35 @@
+---
+- name: Converge
+  hosts: all
+  become: true
+
+  vars:
+    immich_ml_enabled: false
+    immich_ml_hw_accel_enabled: false
+
+  pre_tasks:
+    - name: Install prerequisites
+      ansible.builtin.apt:
+        name:
+          - ca-certificates
+          - curl
+          - docker.io
+          - python3-requests
+          - python3-docker
+        state: present
+        update_cache: true
+
+    - name: Download docker compose plugin
+      ansible.builtin.get_url:
+        url: http://mirrors.kernel.org/ubuntu/pool/universe/d/docker-compose-v2/docker-compose-v2_2.24.6+ds1-0ubuntu2_amd64.deb
+        dest: /tmp/docker-compose-v2.deb
+        mode: "0755"
+
+    - name: Install docker compose plugin
+      ansible.builtin.apt:
+        deb: /tmp/docker-compose-v2.deb
+
+  tasks:
+    - name: Include Immich role
+      ansible.builtin.include_role:
+        name: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}"

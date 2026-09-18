@@ -2,7 +2,7 @@
 
 ## Description
 
-Ansible role to deploy **Immich** as docker containers, to have a self-hosted photo and video management solution.
+Ansible role to deploy **Immich** as docker container, to have a self-hosted photo and video management solution.
 
 ## Requirements
 
@@ -52,7 +52,7 @@ The role uses the following variables:
 
 We welcome contributions! Here’s how you can help improve this role:
 
-1. **Fork the repository**    
+1. **Fork the repository**
   Click the `Fork` button at the top of the repository.
 
 2. **Clone your fork locally**
@@ -71,14 +71,10 @@ We welcome contributions! Here’s how you can help improve this role:
   * Make your changes following Ansible best practices.
   * Add or update tests if applicable.
   * Update the README for any new variables or features.
-  * Test your changes:
-```bash
-ansible-playbook -i test/inventory test/test.yml 
-```
- * Run molecule test:
-```bash
-molecule test
-```
+  * Run molecule test:
+  ```bash
+  molecule test
+  ```
 
 4. **Commit and push your changes**
 
