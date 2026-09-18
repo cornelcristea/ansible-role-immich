@@ -8,11 +8,10 @@
     owner: "{{ immich_uid }}"
     group: "{{ immich_gid }}"
     mode: "0755"
-    recurse: true
   loop:
     - "{{ immich_host_dir }}"
     - "{{ immich_db_dir }}"
-    - "{{ immich_redis_dir }}"
+    - "{{ immich_data_dir }}"
     - "{{ immich_data_dir }}/encoded-video"
     - "{{ immich_data_dir }}/library"
     - "{{ immich_data_dir }}/thumbs"
@@ -22,7 +21,7 @@
   loop_control:
     loop_var: item
 
-- name: Set permission for redis directory
+- name: Create redis directory with specific permissions
   ansible.builtin.file:
     path: "{{ immich_redis_dir }}"
     state: directory
@@ -30,13 +29,10 @@
     group: "{{ immich_redis_gid }}"
     mode: "0755"
 
-- name: Create .immich file in data folders
-  ansible.builtin.file:
-    path: "{{ item }}/.immich"
-    state: touch
-    owner: "{{ immich_uid }}"
-    group: "{{ immich_gid }}"
-    mode: "0644"
+- name: Create expected .immich file in data folders
+  ansible.builtin.command: "touch {{ item }}/.immich"
+  args:
+    creates: "{{ item }}/.immich"
   loop:
     - "{{ immich_data_dir }}/library"
     - "{{ immich_data_dir }}/encoded-video"
@@ -62,7 +58,7 @@
   block:
     - name: Generate environment file
       ansible.builtin.template:
-        src: env.j2
+        src: .env.j2
         dest: "{{ immich_host_dir }}/.env"
         owner: "{{ immich_uid }}"
         group: "{{ immich_gid }}"
@@ -70,7 +66,7 @@
 
     - name: Generate docker compose file
       ansible.builtin.template:
-        src: docker-compose.j2
+        src: docker-compose.yml.j2
         dest: "{{ immich_host_dir }}/docker-compose.yml"
         owner: "{{ immich_uid }}"
         group: "{{ immich_gid }}"
