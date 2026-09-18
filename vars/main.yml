@@ -1,7 +1,12 @@
 ---
 # vars file for immich
 
-immich_host_volume: /opt/immich
+immich_host_dir: /opt/immich
+immich_db_dir: "{{ immich_host_dir }}/db"
+immich_redis_dir: "{{ immich_host_dir }}/redis"
 
-immich_uid: 1000
 immich_gid: 1000
+immich_uid: 1000
+
+immich_redis_gid: 999
+immich_redis_uid: 999
