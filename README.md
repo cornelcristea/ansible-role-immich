@@ -88,7 +88,7 @@ molecule test
   git push origin my-feature-branch
   ```
 
-5. **Open a Pull Request (PR)**   
+5. **Open a Pull Request (PR)**
 Submit a PR from your branch. Include a clear description of your changes and why they’re needed.
 
 **We appreciate your contributions!**
