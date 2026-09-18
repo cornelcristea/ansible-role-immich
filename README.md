@@ -20,15 +20,21 @@ The role uses the following variables:
 
 | Name | Description | Default |
 |---------|-------------|---------|
-| `immich_data_volume` | Path for persisting data | `/opt/immich/data` |
-| `immich_version` | Version of docker image | *check defaults* |
-| `immich_postgres_version` | PostgreSQL version with pgvector extension | *check defaults* |
-| `immich_valkey_version` | Valkey (redis-compatible) version | *check defaults* |
+| `immich_data_dir` | Path for persisting data | `/opt/immich/data` |
+| `immich_db_storage_type` | Database storage type (SSD or HDD) | `SSD` |
+| `immich_ml_enabled` | Enable machine learning features (face detection, etc.) | `true` |
+| `immich_ml_hw_accel_enabled` | Enable hardware acceleration for machine learning features | `true` |
+| `immich_ml_hw_accel_service` | Hardware acceleration service for machine learning features | `cpu` |
+| `immich_ml_version` | Docker image version for machine learning features | `release` |
 | `immich_port` | Web interface port | `2283` |
-| `immich_timezone` | Timezone for application | `UTC` |
-| `immich_db_name` | Database name | `immich_db` |
-| `immich_db_username` | Database username | `dbuser` |
-| `immich_db_password` | Database password | `dbpass` |
+| `immich_postgres_db` | Database name | `immich_db` |
+| `immich_postgres_password` | Database password | `dbpass` |
+| `immich_postgres_username` | Database username | `dbuser` |
+| `immich_postgres_version` | PostgreSQL version with pgvector extension | *check defaults* |
+| `immich_timezone` | Timezone for application | `Etc/UTC` |
+| `immich_valkey_version` | Valkey (redis-compatible) version | *check defaults* |
+| `immich_version` | Version of docker image | `release` |
+
 
 ## Playbook example
 
@@ -37,7 +43,7 @@ The role uses the following variables:
   hosts: servers
   gather_facts: true
   vars:
-    immich_db_name: PostgreSQL
+    immich_postgres_db: PostgreSQL
   roles:
     - cornelcristea.immich
 ```
